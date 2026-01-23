@@ -412,3 +412,141 @@ code{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mo
   .nav__menu a{ padding: .75rem .85rem; }
   .nav__menu.is-open{ display:flex; }
 }
+
+
+/* ========== One-page additions (Face hero, Services, Contact form) ========== */
+
+.hero--face{
+  padding: 3.8rem 0 2.6rem;
+}
+
+.hero__grid--face{
+  grid-template-columns: 1.65fr 1fr;
+  align-items: start;
+}
+
+.panel--profile{
+  padding: 1.15rem;
+}
+
+.profile{
+  display:flex;
+  gap: 0.95rem;
+  align-items:center;
+}
+
+.avatar-wrap{
+  width: 92px;
+  height: 92px;
+  border-radius: 999px;
+  padding: 3px;
+  background: linear-gradient(135deg, rgba(124,92,255,0.85), rgba(0,212,255,0.65));
+  box-shadow: 0 14px 34px rgba(0,0,0,0.25);
+  flex: 0 0 auto;
+}
+
+.avatar{
+  width: 100%;
+  height: 100%;
+  display:block;
+  border-radius: 999px;
+  object-fit: cover;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+.profile__text{ min-width: 0; }
+.profile__name{
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: -0.2px;
+}
+.profile__role{
+  margin: .15rem 0 0;
+  font-size: .95rem;
+}
+
+.profile__links{
+  display:flex;
+  flex-direction:column;
+  gap: .55rem;
+}
+
+/* Services layout */
+.cards--4{
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.card--service h3{
+  margin: 0 0 .5rem;
+  font-size: 1.05rem;
+  letter-spacing: -0.2px;
+}
+
+.lead{
+  margin: 0;
+  font-size: 1.03rem;
+  line-height: 1.6;
+}
+
+/* Contact form */
+.contact--form{
+  align-items: start;
+}
+
+.form{
+  display:flex;
+  flex-direction:column;
+  gap: .85rem;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap: .4rem;
+}
+
+.field__label{
+  font-size: .86rem;
+  color: var(--muted-2);
+}
+
+.input{
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  padding: .85rem .9rem;
+  outline: none;
+}
+
+.input:focus{
+  border-color: rgba(124,92,255,0.55);
+  box-shadow: 0 0 0 4px rgba(124,92,255,0.15);
+}
+
+.textarea{
+  resize: vertical;
+  min-height: 140px;
+}
+
+.small{
+  font-size: .9rem;
+  margin: 0;
+  color: var(--muted-2);
+}
+
+/* Responsive tweaks */
+@media (max-width: 1050px){
+  .cards--4{ grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 900px){
+  .hero__grid--face{ grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px){
+  .cards--4{ grid-template-columns: 1fr; }
+  .avatar-wrap{ width: 82px; height: 82px; }
+}

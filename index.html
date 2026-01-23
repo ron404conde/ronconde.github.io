@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ron Conde | Portfolio</title>
-  <meta name="description" content="Ron Conde — IT / Software Engineer building business systems, internal tools, and web applications." />
+  <meta name="description" content="Ron Conde — IT / Software Engineer building systems, internal tools, and web applications." />
 
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
@@ -25,32 +25,32 @@
 
       <nav class="nav__menu" id="navMenu">
         <a href="#about">About</a>
-        <a href="#projects">Projects</a>
-        <a href="#resume">Resume</a>
+        <a href="#services">Services</a>
+        <a href="#work">Work</a>
         <a href="#contact" class="btn btn--sm btn--ghost">Contact</a>
       </nav>
     </div>
   </header>
 
-  <!-- Hero -->
   <main>
-    <section class="hero">
-      <div class="container hero__grid">
+    <!-- HERO / TOP -->
+    <section class="hero hero--face">
+      <div class="container hero__grid hero__grid--face">
         <div class="hero__content">
-          <p class="badge">Available for opportunities</p>
+          <p class="badge">Open to opportunities</p>
+
           <h1 class="hero__title">
-            IT / Software Engineer building
-            <span class="accent">business systems</span>,
-            internal tools, and web apps.
+            Hi, I’m <span class="accent">Ron</span> — I build
+            <span class="accent">clean, practical</span> systems and web apps.
           </h1>
 
           <p class="hero__subtitle">
-            I like shipping practical solutions—clean UI, reliable data, and fast workflows.
+            I focus on fast workflows, reliable data, and modern UI that feels simple to use.
           </p>
 
           <div class="hero__cta">
-            <a class="btn" href="#projects">View Projects</a>
-            <a class="btn btn--ghost" href="#contact">Get in Touch</a>
+            <a class="btn" href="#work">See my work</a>
+            <a class="btn btn--ghost" href="#contact">Message me</a>
           </div>
 
           <div class="hero__meta">
@@ -69,20 +69,37 @@
           </div>
         </div>
 
+        <!-- Face / Profile Panel -->
         <aside class="hero__panel">
-          <div class="panel">
-            <h2 class="panel__title">Quick Highlights</h2>
+          <div class="panel panel--profile">
+            <div class="profile">
+              <!-- Put your image here: assets/img/ron.jpg -->
+              <div class="avatar-wrap">
+                <img class="avatar" src="assets/img/ron.jpg" alt="Portrait of Ron Conde" loading="lazy" />
+              </div>
+
+              <div class="profile__text">
+                <h2 class="profile__name">Ron Conde</h2>
+                <p class="profile__role muted">IT / Software Engineer</p>
+              </div>
+            </div>
+
+            <div class="panel__divider"></div>
+
             <ul class="panel__list">
-              <li><span class="chip">Payroll + HR</span> semi-monthly workflows, reporting, exports</li>
-              <li><span class="chip">Timekeeping</span> biometric logs → validation → payroll-ready</li>
-              <li><span class="chip">Web Apps</span> admin dashboards, CRUD, charts</li>
+              <li><span class="chip">Build</span> internal tools & business apps</li>
+              <li><span class="chip">Improve</span> workflows, reports, exports</li>
+              <li><span class="chip">Deliver</span> clean UI + solid data handling</li>
             </ul>
 
             <div class="panel__divider"></div>
 
-            <p class="panel__small">
-              Tip: We’ll add project cards next, then resume & contact sections.
-            </p>
+            <div class="profile__links">
+              <a class="link" href="mailto:sollezarondel@gmail.com">sollezarondel@gmail.com</a>
+              <a class="link" href="https://github.com/ron404conde" target="_blank" rel="noopener">github.com/ron404conde</a>
+              <!-- Optional -->
+              <!-- <a class="link" href="https://www.linkedin.com/in/yourprofile" target="_blank" rel="noopener">LinkedIn</a> -->
+            </div>
           </div>
         </aside>
       </div>
@@ -93,16 +110,16 @@
       <div class="grid-overlay" aria-hidden="true"></div>
     </section>
 
-    <!-- About -->
+    <!-- ABOUT -->
     <section class="section" id="about">
       <div class="container">
         <div class="section__head">
           <h2>About</h2>
-          <p class="muted">A short intro you can adjust anytime.</p>
+          <p class="muted">A quick summary of what I do.</p>
         </div>
 
         <div class="card">
-          <p>
+          <p class="lead">
             I build business systems and internal tools that make operations faster and more reliable.
             I care about clean UI/UX, predictable data handling, and maintainable code.
           </p>
@@ -110,20 +127,72 @@
           <div class="pill-row">
             <span class="pill">Automation</span>
             <span class="pill">Database Design</span>
-            <span class="pill">Reporting</span>
             <span class="pill">Dashboards</span>
+            <span class="pill">Reporting</span>
             <span class="pill">Integrations</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Projects (placeholder cards; we’ll expand next) -->
-    <section class="section" id="projects">
+    <!-- SERVICES -->
+    <section class="section" id="services">
       <div class="container">
         <div class="section__head">
-          <h2>Projects</h2>
-          <p class="muted">A few systems I’ve built and improved.</p>
+          <h2>Services</h2>
+          <p class="muted">What I can help you build or improve.</p>
+        </div>
+
+        <div class="cards cards--4">
+          <article class="card card--service">
+            <h3>Business Systems</h3>
+            <p class="muted">
+              Build/upgrade internal apps (HR, payroll, inventory, operations) with clean workflows.
+            </p>
+            <div class="card__chips">
+              <span class="chip">Workflows</span><span class="chip">Data</span><span class="chip">UX</span>
+            </div>
+          </article>
+
+          <article class="card card--service">
+            <h3>Automation & Reporting</h3>
+            <p class="muted">
+              Generate exports, reports, audit trails, and reduce repetitive manual steps.
+            </p>
+            <div class="card__chips">
+              <span class="chip">Exports</span><span class="chip">Reports</span><span class="chip">Audit</span>
+            </div>
+          </article>
+
+          <article class="card card--service">
+            <h3>Web Apps & Dashboards</h3>
+            <p class="muted">
+              Admin dashboards, CRUD modules, and responsive UI that feels modern and fast.
+            </p>
+            <div class="card__chips">
+              <span class="chip">CRUD</span><span class="chip">Dashboard</span><span class="chip">UI</span>
+            </div>
+          </article>
+
+          <article class="card card--service">
+            <h3>Systems / IT Support</h3>
+            <p class="muted">
+              Networking, device setup, deployments, and keeping systems stable for day-to-day ops.
+            </p>
+            <div class="card__chips">
+              <span class="chip">Infra</span><span class="chip">Devices</span><span class="chip">Support</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORK -->
+    <section class="section" id="work">
+      <div class="container">
+        <div class="section__head">
+          <h2>Work</h2>
+          <p class="muted">Some projects and systems I’ve built or improved.</p>
         </div>
 
         <div class="cards">
@@ -133,10 +202,10 @@
               <span class="tag">Business System</span>
             </div>
             <p class="muted">
-              Payroll period setup, contributions, reporting, exports—designed for speed and accuracy.
+              Payroll periods, contribution computations, reporting, and exports—optimized for accuracy and speed.
             </p>
             <div class="card__chips">
-              <span class="chip">SQL</span><span class="chip">Reports</span><span class="chip">Exports</span>
+              <span class="chip">Workflows</span><span class="chip">Reports</span><span class="chip">Exports</span>
             </div>
           </article>
 
@@ -146,7 +215,7 @@
               <span class="tag">Attendance</span>
             </div>
             <p class="muted">
-              Biometric device logs → validation rules → payroll-ready summaries with audit trail.
+              Biometric logs → validation rules → payroll-ready summaries with traceable history.
             </p>
             <div class="card__chips">
               <span class="chip">Devices</span><span class="chip">Validation</span><span class="chip">Automation</span>
@@ -159,7 +228,7 @@
               <span class="tag">Web App</span>
             </div>
             <p class="muted">
-              Booking flow, rental tracking, charges/payments, admin dashboard with clean UI.
+              Booking flow, rental tracking, charges/payments, and a clean admin dashboard.
             </p>
             <div class="card__chips">
               <span class="chip">Web</span><span class="chip">CRUD</span><span class="chip">Dashboard</span>
@@ -169,45 +238,47 @@
       </div>
     </section>
 
-    <!-- Resume -->
-    <section class="section" id="resume">
-      <div class="container">
-        <div class="section__head">
-          <h2>Resume</h2>
-          <p class="muted">Add your PDF and link it here.</p>
-        </div>
-
-        <div class="card resume">
-          <div>
-            <h3 class="resume__title">Download my resume</h3>
-            <p class="muted">Upload your PDF to <code>assets/img/</code> and update the button link.</p>
-          </div>
-          <a class="btn" href="assets/img/Ron-Conde-Resume.pdf" target="_blank" rel="noopener">
-            Download PDF
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Contact -->
+    <!-- CONTACT -->
     <section class="section" id="contact">
       <div class="container">
         <div class="section__head">
           <h2>Contact</h2>
-          <p class="muted">For now: email + social links. (We can add a form next.)</p>
+          <p class="muted">Send a message. This form opens your email client (simple + works anywhere).</p>
         </div>
 
-        <div class="card contact">
+        <div class="card contact contact--form">
           <div class="contact__col">
             <h3>Let’s build something</h3>
-            <p class="muted">Send me a message and tell me what you’re working on.</p>
+            <p class="muted">
+              Tell me what you want to build or fix, and what “done” looks like.
+            </p>
+
+            <div class="contact__links">
+              <a class="link" href="mailto:sollezarondel@gmail.com">sollezarondel@gmail.com</a>
+              <a class="link" href="https://github.com/ron404conde" target="_blank" rel="noopener">GitHub</a>
+            </div>
           </div>
 
-          <div class="contact__col contact__links">
-            <a class="link" href="mailto:sollezarondel@gmail.com">sollezarondel@gmail.com</a>
-            <a class="link" href="https://github.com/ron404conde" target="_blank" rel="noopener">github.com/ron404conde</a>
-            <!-- Add LinkedIn when ready -->
-            <!-- <a class="link" href="https://www.linkedin.com/in/yourprofile" target="_blank" rel="noopener">LinkedIn</a> -->
+          <div class="contact__col">
+            <form id="contactForm" class="form" autocomplete="on">
+              <label class="field">
+                <span class="field__label">Name</span>
+                <input class="input" name="name" type="text" placeholder="Your name" required />
+              </label>
+
+              <label class="field">
+                <span class="field__label">Email</span>
+                <input class="input" name="email" type="email" placeholder="you@email.com" required />
+              </label>
+
+              <label class="field">
+                <span class="field__label">Message</span>
+                <textarea class="input textarea" name="message" rows="5" placeholder="What do you want to build?" required></textarea>
+              </label>
+
+              <button class="btn" type="submit">Send message</button>
+              <p class="muted small">This will open your email app with a pre-filled message.</p>
+            </form>
           </div>
         </div>
       </div>

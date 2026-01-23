@@ -33,3 +33,24 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 // Year
 const y = document.getElementById("year");
 if (y) y.textContent = String(new Date().getFullYear());
+
+// Contact form -> opens mail client with prefilled email
+const contactForm = document.getElementById("contactForm");
+if (contactForm) {
+  contactForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const fd = new FormData(contactForm);
+    const name = String(fd.get("name") || "").trim();
+    const email = String(fd.get("email") || "").trim();
+    const message = String(fd.get("message") || "").trim();
+
+    const to = "sollezarondel@gmail.com";
+    const subject = encodeURIComponent(`Portfolio message from ${name}`);
+    const body = encodeURIComponent(
+      `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}\n`
+    );
+
+    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+  });
+}
