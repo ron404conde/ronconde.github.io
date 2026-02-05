@@ -135,6 +135,8 @@
       background: var(--pink);
       color: #fff;
       box-shadow: 0 10px 18px rgba(255, 61, 127, .28);
+      position: relative;
+      z-index: 2;
     }
     .yes:hover{ background: var(--pink-dark); }
     .yes.bounce{ animation: yesBounce .55s ease; }
@@ -154,6 +156,7 @@
       color: #111;
       box-shadow: 0 8px 16px rgba(0,0,0,.08);
       position: relative;
+      z-index: 3; /* keep on top when dodging */
     }
 
     .cry-wrap{
@@ -309,6 +312,15 @@
     let noClicks = 0;
     let accepted = false;
 
+    // ✅ mobile click-through guard
+    let blockNextClick = false;
+    document.addEventListener("click", (e) => {
+      if (!blockNextClick) return;
+      e.preventDefault();
+      e.stopPropagation();
+      blockNextClick = false;
+    }, true);
+
     const noPhrases = [
       "No 😼",
       "Wait… what? 🤨",
@@ -361,14 +373,25 @@
       }
     }
 
+    // ✅ distance helper
+    function dist(ax, ay, bx, by){
+      const dx = ax - bx;
+      const dy = ay - by;
+      return Math.sqrt(dx*dx + dy*dy);
+    }
+
+    // ✅ dodge with “keep away from YES”
     function dodge(){
       if (accepted) return;
 
       const cardRect = card.getBoundingClientRect();
       const rowRect  = row.getBoundingClientRect();
       const noRect   = btnNo.getBoundingClientRect();
+      const yesRect  = btnYes.getBoundingClientRect();
 
       btnNo.style.position = "absolute";
+      btnNo.style.zIndex = "3";
+      btnYes.style.zIndex = "2";
 
       const zoneTop = rowRect.top - cardRect.top - 10;
       const zoneHeight = Math.max(70, rowRect.height + 40);
@@ -380,8 +403,38 @@
       const minY = Math.max(10, zoneTop);
       const maxY = Math.min(cardRect.height - noRect.height - 70, zoneBottom);
 
-      const x = Math.random() * (maxX - minX) + minX;
-      const y = Math.random() * (maxY - minY) + minY;
+      const yesCenter = { x: yesRect.left + yesRect.width/2, y: yesRect.top + yesRect.height/2 };
+
+      // tweak this if you want farther/closer
+      const minDist =
+        Math.max(noRect.width, noRect.height) * 1.2 +
+        Math.max(yesRect.width, yesRect.height) * 0.55 + 18;
+
+      let x = minX, y = minY;
+      let ok = false;
+
+      for (let tries = 0; tries < 25; tries++){
+        const rx = Math.random() * (maxX - minX) + minX;
+        const ry = Math.random() * (maxY - minY) + minY;
+
+        const candCenter = {
+          x: cardRect.left + rx + noRect.width/2,
+          y: cardRect.top  + ry + noRect.height/2
+        };
+
+        if (dist(candCenter.x, candCenter.y, yesCenter.x, yesCenter.y) >= minDist){
+          x = rx; y = ry;
+          ok = true;
+          break;
+        }
+      }
+
+      // fallback: push away horizontally from YES if no good random spot found
+      if (!ok){
+        const away = (cardRect.left + (minX + maxX)/2 < yesCenter.x) ? -1 : 1;
+        x = Math.min(maxX, Math.max(minX, (yesRect.left - cardRect.left) + away * (minDist)));
+        y = Math.random() * (maxY - minY) + minY;
+      }
 
       btnNo.style.left = `${x}px`;
       btnNo.style.top  = `${y}px`;
@@ -402,11 +455,21 @@
       });
     } else {
       btnNo.addEventListener("pointerdown", (e) => {
+        // ✅ prevent synthetic click from hitting YES after NO moves
+        blockNextClick = true;
+
         e.preventDefault();
+        e.stopPropagation();
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+
+        try { btnNo.setPointerCapture(e.pointerId); } catch {}
+
         growYes();
         updateNoText();
         dodge();
-      });
+
+        setTimeout(() => { blockNextClick = false; }, 280);
+      }, { passive: false });
     }
 
     // ----------------------------
