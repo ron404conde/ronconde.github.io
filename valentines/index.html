@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Valentine</title>
+
+  <style>
+    :root{
+      --bg: #f7d6e3;
+      --card: #ffffff;
+      --pink: #ff3d7f;
+      --pink-dark:#e82f6f;
+      --gray:#e9edf2;
+      --text:#111;
+      --muted:#666;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      padding: 18px;
+    }
+
+    @keyframes floaty {
+      0%   { transform: translateY(0px); }
+      50%  { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    @keyframes yesBounce {
+      0%   { transform: scale(var(--yesScale, 1)) translateY(0); }
+      25%  { transform: scale(var(--yesScale, 1)) translateY(-10px); }
+      50%  { transform: scale(var(--yesScale, 1)) translateY(0); }
+      75%  { transform: scale(var(--yesScale, 1)) translateY(-6px); }
+      100% { transform: scale(var(--yesScale, 1)) translateY(0); }
+    }
+
+    /* ✅ Cute text wiggle (idle) */
+    @keyframes titleWiggle {
+      0%   { transform: translateY(0) rotate(0deg); }
+      20%  { transform: translateY(-1px) rotate(-0.8deg); }
+      40%  { transform: translateY(0) rotate(0.8deg); }
+      60%  { transform: translateY(-1px) rotate(-0.6deg); }
+      80%  { transform: translateY(0) rotate(0.6deg); }
+      100% { transform: translateY(0) rotate(0deg); }
+    }
+
+    /* ✅ Quick celebrate shake (one-shot) */
+    @keyframes titleCelebrate {
+      0%   { transform: translateY(0) rotate(0deg) scale(1); }
+      10%  { transform: translateY(-2px) rotate(-2deg) scale(1.02); }
+      25%  { transform: translateY(1px) rotate(2deg) scale(1.02); }
+      40%  { transform: translateY(-2px) rotate(-1.5deg) scale(1.02); }
+      55%  { transform: translateY(1px) rotate(1.5deg) scale(1.02); }
+      70%  { transform: translateY(-1px) rotate(-1deg) scale(1.01); }
+      85%  { transform: translateY(0) rotate(1deg) scale(1.01); }
+      100% { transform: translateY(0) rotate(0deg) scale(1); }
+    }
+
+    .card{
+      width: min(680px, 94vw);
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 26px 64px rgba(0,0,0,.15);
+      padding: 54px 54px 32px;
+      text-align:center;
+      position: relative;
+      animation: floaty 3.2s ease-in-out infinite;
+      will-change: transform;
+    }
+
+    .icon{
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 14px;
+      display:block;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,.14));
+    }
+
+    h1{
+      margin: 18px 0 22px;
+      font-size: 30px;
+      line-height: 1.22;
+      color: var(--text);
+      font-weight: 800;
+      display: inline-block; /* ✅ needed so transform doesn't affect layout weirdly */
+      transform-origin: center;
+      will-change: transform;
+    }
+
+    /* ✅ idle wiggle */
+    h1.wiggle{
+      animation: titleWiggle 1.8s ease-in-out infinite;
+    }
+
+    /* ✅ one-shot celebration */
+    h1.celebrate{
+      animation: titleCelebrate .75s ease both;
+    }
+
+    .btn-row{
+      position: relative;
+      height: 84px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 22px;
+      margin-top: 6px;
+      margin-bottom: 8px;
+    }
+
+    button{
+      border:0;
+      padding: 15px 30px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform .18s ease, background .12s ease, padding .18s ease, font-size .18s ease;
+      touch-action: manipulation;
+      transform-origin: center;
+    }
+    button:active{ transform: scale(.97); }
+
+    .yes{
+      background: var(--pink);
+      color: #fff;
+      box-shadow: 0 10px 18px rgba(255, 61, 127, .28);
+    }
+    .yes:hover{ background: var(--pink-dark); }
+    .yes.bounce{ animation: yesBounce .55s ease; }
+
+    /* ✅ After YES click: keep it nice and never cover the title */
+    .yes.final{
+      transform: none !important;
+      padding: 15px 30px !important;
+      font-size: 15px !important;
+      max-width: min(340px, 86%);
+      width: auto;
+      white-space: nowrap;
+    }
+
+    .no{
+      background: var(--gray);
+      color: #111;
+      box-shadow: 0 8px 16px rgba(0,0,0,.08);
+      position: relative;
+    }
+
+    .cry-wrap{
+      display: none;
+      margin: 10px auto 0;
+      max-width: 180px;
+      width: 60%;
+      min-width: 140px;
+    }
+    .cry-wrap.show{ display: block; }
+
+    .cry-gif{
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 26px rgba(0,0,0,.10);
+      background: #fff;
+    }
+
+    .footer{
+      margin-top: 16px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #ff3d7f;
+    }
+
+    .toast{
+      position: absolute;
+      left: 50%;
+      bottom: -14px;
+      transform: translateX(-50%);
+      background: rgba(17,17,17,.92);
+      color: #fff;
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease, bottom .2s ease;
+      white-space: nowrap;
+    }
+    .toast.show{
+      opacity: 1;
+      bottom: -2px;
+    }
+
+    #fxCanvas{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .music-btn{
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 20;
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(0,0,0,.08);
+      box-shadow: 0 10px 22px rgba(0,0,0,.10);
+      backdrop-filter: blur(8px);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .music-btn:active{ transform: scale(.98); }
+
+    @media (max-width: 520px){
+      .card{
+        width: min(520px, 96vw);
+        padding: 28px 18px 20px;
+        border-radius: 14px;
+      }
+      .icon{ width: 96px; height: 96px; margin-bottom: 10px; }
+      h1{ font-size: 22px; margin: 10px 0 16px; }
+      .btn-row{ height: 74px; gap: 14px; }
+      button{ padding: 12px 22px; font-size: 14px; }
+      .footer{ font-size: 13px; margin-top: 10px; }
+      .toast{ font-size: 12px; padding: 9px 12px; }
+      .cry-wrap{ max-width: 160px; }
+      .yes.final{ padding: 12px 22px !important; font-size: 14px !important; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .card{ animation: none; }
+      button{ transition: none; }
+      .yes.bounce{ animation: none; }
+      h1.wiggle, h1.celebrate{ animation: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="fxCanvas"></canvas>
+  <button class="music-btn" id="musicBtn" title="Toggle music">🔇 Music</button>
+
+  <main class="card" id="card">
+
+    <svg class="icon" viewBox="0 0 120 120" aria-hidden="true">
+      <path d="M88 20c-7 0-12 5-14 9-2-4-7-9-14-9-9 0-16 7-16 16 0 18 30 33 30 33s30-15 30-33c0-9-7-16-16-16z" fill="#ff3d7f"/>
+      <circle cx="56" cy="62" r="34" fill="#f6c9a2"/>
+      <path d="M35 42 24 26c-2-3 1-7 4-6l18 6" fill="#f6c9a2"/>
+      <path d="M77 42 88 26c2-3-1-7-4-6l-18 6" fill="#f6c9a2"/>
+      <circle cx="46" cy="62" r="4.2" fill="#111"/>
+      <circle cx="66" cy="62" r="4.2" fill="#111"/>
+      <circle cx="56" cy="71" r="3.2" fill="#ff8fb0"/>
+      <circle cx="38" cy="72" r="5" fill="#ffb2c9" opacity=".75"/>
+      <circle cx="74" cy="72" r="5" fill="#ffb2c9" opacity=".75"/>
+    </svg>
+
+    <h1 id="titleText" class="wiggle">Bebe Anjie will chu be my<br>valentine?</h1>
+
+    <div class="btn-row" id="btnRow">
+      <button class="yes" id="btnYes">Yes</button>
+      <button class="no" id="btnNo">No</button>
+    </div>
+
+    <div class="cry-wrap" id="cryWrap">
+      <img
+        id="cryGif"
+        src="./crying-loudly-iyak.gif"
+        alt="Crying sticker"
+        class="cry-gif"
+        loading="lazy"
+      />
+    </div>
+
+    <div class="footer">Our date: 14/02 💜</div>
+    <div class="toast" id="toast">Yay! 💖 See you on 14/02.</div>
+
+  </main>
+
+  <script>
+    const btnYes = document.getElementById("btnYes");
+    const btnNo  = document.getElementById("btnNo");
+    const card   = document.getElementById("card");
+    const row    = document.getElementById("btnRow");
+    const toast  = document.getElementById("toast");
+    const fxCanvas = document.getElementById("fxCanvas");
+    const musicBtn = document.getElementById("musicBtn");
+    const cryWrap = document.getElementById("cryWrap");
+    const cryGif  = document.getElementById("cryGif");
+    const titleText = document.getElementById("titleText");
+
+    const canHover = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+    let noClicks = 0;
+    let accepted = false;
+
+    const noPhrases = [
+      "No 😼",
+      "Wait… what? 🤨",
+      "Nice try 😏",
+      "You can't catch me 🏃‍♂️💨",
+      "Sumbong kita sa baby natin! 🤪",
+      "Nope nope nope 🙅‍♀️",
+      "Huy wag 😳",
+      "Sige na nga… 😶",
+      "Last chance 😌",
+      "Okay… maybe? 🥺",
+      "Try again 😜",
+      "I'm shy 🙈",
+      "Not allowed 😤",
+      "Eyy! 😆",
+      "You want trouble? 😈"
+    ];
+
+    function updateNoText(){
+      const idx = (noClicks - 1) % noPhrases.length;
+      btnNo.textContent = noPhrases[idx];
+    }
+
+    function triggerYesBounce(){
+      btnYes.classList.remove("bounce");
+      void btnYes.offsetWidth;
+      btnYes.classList.add("bounce");
+    }
+
+    function growYes(){
+      if (accepted) return;
+
+      noClicks++;
+
+      const scale = Math.min(1 + (noClicks * 0.10), 2.2);
+      btnYes.style.setProperty("--yesScale", scale);
+
+      const padX = Math.min(30 + noClicks * 3, 60);
+      const padY = Math.min(15 + noClicks * 1, 28);
+      const font = Math.min(15 + noClicks * 1, 24);
+
+      btnYes.style.transform = `scale(${scale})`;
+      btnYes.style.padding = `${padY}px ${padX}px`;
+      btnYes.style.fontSize = `${font}px`;
+
+      if (noClicks >= 5){
+        btnYes.textContent = "Come onnnn";
+        cryWrap.classList.add("show");
+        triggerYesBounce();
+      }
+    }
+
+    function dodge(){
+      if (accepted) return;
+
+      const cardRect = card.getBoundingClientRect();
+      const rowRect  = row.getBoundingClientRect();
+      const noRect   = btnNo.getBoundingClientRect();
+
+      btnNo.style.position = "absolute";
+
+      const zoneTop = rowRect.top - cardRect.top - 10;
+      const zoneHeight = Math.max(70, rowRect.height + 40);
+      const zoneBottom = zoneTop + zoneHeight;
+
+      const minX = 18;
+      const maxX = cardRect.width - noRect.width - 18;
+
+      const minY = Math.max(10, zoneTop);
+      const maxY = Math.min(cardRect.height - noRect.height - 70, zoneBottom);
+
+      const x = Math.random() * (maxX - minX) + minX;
+      const y = Math.random() * (maxY - minY) + minY;
+
+      btnNo.style.left = `${x}px`;
+      btnNo.style.top  = `${y}px`;
+    }
+
+    if (canHover){
+      btnNo.addEventListener("mouseenter", () => {
+        growYes();
+        updateNoText();
+        dodge();
+      });
+
+      btnNo.addEventListener("click", (e) => {
+        e.preventDefault();
+        growYes();
+        updateNoText();
+        dodge();
+      });
+    } else {
+      btnNo.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        growYes();
+        updateNoText();
+        dodge();
+      });
+    }
+
+    // ----------------------------
+    // Background music (WebAudio)
+    // ----------------------------
+    let audioCtx = null;
+    let musicOn = false;
+    let osc = null, gain = null, lfo = null, lfoGain = null;
+
+    function startMusic(){
+      if (musicOn) return;
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      osc = audioCtx.createOscillator();
+      gain = audioCtx.createGain();
+
+      lfo = audioCtx.createOscillator();
+      lfoGain = audioCtx.createGain();
+      lfo.frequency.value = 5;
+      lfoGain.gain.value = 8;
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc.frequency);
+
+      osc.type = "sine";
+      gain.gain.value = 0.0;
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      lfo.start();
+
+      const notes = [523.25, 587.33, 659.25, 587.33, 523.25, 440.00, 493.88, 523.25];
+      let i = 0;
+
+      function tick(){
+        if (!musicOn) return;
+        osc.frequency.setValueAtTime(notes[i % notes.length], audioCtx.currentTime);
+        i++;
+        setTimeout(tick, 420);
+      }
+
+      musicOn = true;
+      musicBtn.textContent = "🔊 Music";
+      gain.gain.setTargetAtTime(0.08, audioCtx.currentTime, 0.15);
+      tick();
+    }
+
+    function stopMusic(){
+      if (!musicOn) return;
+      musicOn = false;
+      musicBtn.textContent = "🔇 Music";
+
+      try {
+        if (gain && audioCtx){
+          gain.gain.setTargetAtTime(0.0, audioCtx.currentTime, 0.08);
+        }
+        setTimeout(() => {
+          try { osc && osc.stop(); } catch {}
+          try { lfo && lfo.stop(); } catch {}
+          osc = gain = lfo = lfoGain = null;
+        }, 250);
+      } catch {}
+    }
+
+    musicBtn.addEventListener("click", async () => {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") await audioCtx.resume();
+      if (musicOn) stopMusic();
+      else startMusic();
+    });
+
+    window.addEventListener("pointerdown", async () => {
+      if (musicOn) return;
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") await audioCtx.resume();
+      startMusic();
+    }, { once: true });
+
+    // ----------------------------
+    // Confetti + hearts
+    // ----------------------------
+    const ctx = fxCanvas.getContext("2d");
+    function resize(){
+      fxCanvas.width  = Math.floor(window.innerWidth * devicePixelRatio);
+      fxCanvas.height = Math.floor(window.innerHeight * devicePixelRatio);
+      fxCanvas.style.width = window.innerWidth + "px";
+      fxCanvas.style.height = window.innerHeight + "px";
+      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    const particles = [];
+    const rand = (a,b)=>Math.random()*(b-a)+a;
+
+    function spawnBurst(x, y){
+      for (let i=0; i<140; i++){
+        particles.push({
+          type:"confetti", x,y,
+          vx: rand(-6,6), vy: rand(-10,-2), g: rand(0.12,0.22),
+          rot: rand(0,Math.PI*2), vr: rand(-0.2,0.2),
+          w: rand(6,10), h: rand(10,16),
+          life: rand(70,110), maxLife:110,
+          c: `hsl(${Math.floor(rand(320,380)%360)}, ${Math.floor(rand(60,90))}%, ${Math.floor(rand(55,70))}%)`
+        });
+      }
+      for (let i=0; i<28; i++){
+        particles.push({
+          type:"heart", x,y,
+          vx: rand(-3.5,3.5), vy: rand(-9,-3), g: rand(0.09,0.16),
+          s: rand(10,18),
+          life: rand(80,120), maxLife:120,
+          c: `hsl(${Math.floor(rand(330,10)%360)}, 85%, 62%)`
+        });
+      }
+    }
+
+    function drawHeart(x, y, size, color, alpha){
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = color;
+      ctx.translate(x, y);
+      ctx.beginPath();
+      const s = size / 16;
+      ctx.moveTo(0, 3*s);
+      ctx.bezierCurveTo(0, 0, -6*s, 0, -6*s, 3*s);
+      ctx.bezierCurveTo(-6*s, 6*s, -3*s, 9*s, 0, 12*s);
+      ctx.bezierCurveTo(3*s, 9*s, 6*s, 6*s, 6*s, 3*s);
+      ctx.bezierCurveTo(6*s, 0, 0, 0, 0, 3*s);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    let raf = null;
+    function loop(){
+      ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+      for (let i=particles.length-1; i>=0; i--){
+        const p = particles[i];
+        p.vy += p.g;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+
+        const alpha = Math.max(0, Math.min(1, p.life / p.maxLife));
+
+        if (p.type === "confetti"){
+          p.rot += p.vr;
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.c;
+          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+          ctx.restore();
+        } else {
+          drawHeart(p.x, p.y, p.s, p.c, alpha);
+        }
+
+        if (p.life <= 0 || p.y > window.innerHeight + 60){
+          particles.splice(i,1);
+        }
+      }
+      if (particles.length) raf = requestAnimationFrame(loop);
+      else raf = null;
+    }
+
+    function playFxAtCard(){
+      const r = card.getBoundingClientRect();
+      spawnBurst(r.left + r.width/2, r.top + r.height/2 - 10);
+      if (!raf) loop();
+    }
+
+    function resetYesSize(){
+      btnYes.style.removeProperty("transform");
+      btnYes.style.removeProperty("padding");
+      btnYes.style.removeProperty("font-size");
+      btnYes.style.setProperty("--yesScale", 1);
+      btnYes.classList.remove("bounce");
+      btnYes.classList.add("final");
+    }
+
+    function doTitleCelebrate(){
+      // remove wiggle, run celebrate once, then keep it still
+      titleText.classList.remove("wiggle");
+      titleText.classList.remove("celebrate");
+      void titleText.offsetWidth; // reflow to restart animation
+      titleText.classList.add("celebrate");
+    }
+
+    btnYes.addEventListener("click", async () => {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") await audioCtx.resume();
+        if (!musicOn) startMusic();
+
+        // ✅ Always allow confetti on every click
+        playFxAtCard();
+
+        // ✅ But only do the “final UI changes” once
+        if (!accepted){
+            accepted = true;
+
+            resetYesSize();
+
+            toast.classList.add("show");
+            btnYes.textContent = "Yesss! 💘";
+            btnNo.style.display = "none";
+
+            titleText.innerHTML = "Thank you for Chu-sing me, too. 💖";
+            doTitleCelebrate();
+
+            cryWrap.classList.add("show");
+            cryGif.src = "./kiss-love.gif";
+            cryGif.alt = "Kiss love";
+
+            setTimeout(() => toast.classList.remove("show"), 2200);
+        } else {
+            // optional: show toast again on extra clicks
+            toast.classList.add("show");
+            setTimeout(() => toast.classList.remove("show"), 900);
+        }
+    });
+
+  </script>
+
+</body>
+</html>
