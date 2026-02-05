@@ -389,13 +389,14 @@
       const noRect   = btnNo.getBoundingClientRect();
       const yesRect  = btnYes.getBoundingClientRect();
 
+      // make NO free to move inside the card
       btnNo.style.position = "absolute";
       btnNo.style.zIndex = "3";
       btnYes.style.zIndex = "2";
 
-      const zoneTop = rowRect.top - cardRect.top - 10;
-      const zoneHeight = Math.max(70, rowRect.height + 40);
-      const zoneBottom = zoneTop + zoneHeight;
+      // ✅ define a safe zone (mostly around the button row, but with breathing room)
+      const zoneTop = (rowRect.top - cardRect.top) - 12;
+      const zoneBottom = (rowRect.bottom - cardRect.top) + 32;
 
       const minX = 18;
       const maxX = cardRect.width - noRect.width - 18;
@@ -403,41 +404,45 @@
       const minY = Math.max(10, zoneTop);
       const maxY = Math.min(cardRect.height - noRect.height - 70, zoneBottom);
 
-      const yesCenter = { x: yesRect.left + yesRect.width/2, y: yesRect.top + yesRect.height/2 };
+      // ✅ centers in CARD-LOCAL coords
+      const yesCenter = {
+        x: (yesRect.left - cardRect.left) + yesRect.width / 2,
+        y: (yesRect.top  - cardRect.top)  + yesRect.height / 2
+      };
 
-      // tweak this if you want farther/closer
-      const minDist =
-        Math.max(noRect.width, noRect.height) * 1.2 +
-        Math.max(yesRect.width, yesRect.height) * 0.55 + 18;
+      // grow distance, but CAP it so it stays solvable
+      let minDist =
+        Math.max(noRect.width, noRect.height) * 1.15 +
+        Math.max(yesRect.width, yesRect.height) * 0.45 + 16;
 
-      let x = minX, y = minY;
-      let ok = false;
+      const maxPossible = Math.hypot(cardRect.width, cardRect.height) * 0.55;
+      minDist = Math.min(minDist, maxPossible);
 
-      for (let tries = 0; tries < 25; tries++){
+      // ✅ pick a random candidate; if none passes, take the farthest one
+      let best = { x: (minX + maxX) / 2, y: (minY + maxY) / 2, d: -1 };
+      let chosen = null;
+
+      const TRIES = 80; // more tries = less “sticking”
+      for (let i = 0; i < TRIES; i++){
         const rx = Math.random() * (maxX - minX) + minX;
         const ry = Math.random() * (maxY - minY) + minY;
 
-        const candCenter = {
-          x: cardRect.left + rx + noRect.width/2,
-          y: cardRect.top  + ry + noRect.height/2
-        };
+        const candCenter = { x: rx + noRect.width/2, y: ry + noRect.height/2 };
+        const d = dist(candCenter.x, candCenter.y, yesCenter.x, yesCenter.y);
 
-        if (dist(candCenter.x, candCenter.y, yesCenter.x, yesCenter.y) >= minDist){
-          x = rx; y = ry;
-          ok = true;
+        if (d > best.d) best = { x: rx, y: ry, d };
+
+        if (d >= minDist){
+          chosen = { x: rx, y: ry };
           break;
         }
       }
 
-      // fallback: push away horizontally from YES if no good random spot found
-      if (!ok){
-        const away = (cardRect.left + (minX + maxX)/2 < yesCenter.x) ? -1 : 1;
-        x = Math.min(maxX, Math.max(minX, (yesRect.left - cardRect.left) + away * (minDist)));
-        y = Math.random() * (maxY - minY) + minY;
-      }
+      // ✅ if no perfect spot, use the best (farthest) spot instead of clamping to an edge
+      const finalPos = chosen || { x: best.x, y: best.y };
 
-      btnNo.style.left = `${x}px`;
-      btnNo.style.top  = `${y}px`;
+      btnNo.style.left = `${finalPos.x}px`;
+      btnNo.style.top  = `${finalPos.y}px`;
     }
 
     if (canHover){
