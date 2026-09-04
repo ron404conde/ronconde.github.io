@@ -210,6 +210,9 @@ body{
   transition: background-color var(--dur-base) var(--ease), color var(--dur-base) var(--ease);
 }
 
+/* Held by scrollLock in app.js while the nav or lightbox is open. */
+body.is-locked{ overflow: hidden; }
+
 h1, h2, h3, h4{
   font-family: var(--font-display);
   font-weight: 700;
@@ -537,6 +540,9 @@ button, input, textarea{
   opacity: 1;
 }
 
+/* Lives in the menu markup but only appears once the header CTA drops out. */
+.nav__menu-cta{ display: none; }
+
 .nav__actions{
   display: flex;
   align-items: center;
@@ -741,10 +747,31 @@ button, input, textarea{
   margin-block: var(--s-3) var(--s-4);
 }
 
+/* Which system an entry belongs to — matches the toolbox group headings. */
+.work-item__system{
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  margin-top: var(--s-2);
+}
+
 .work-item__desc{
   color: var(--text-muted);
   max-width: 44ch;
+  margin-bottom: var(--s-4);
+}
+
+/* Scale and outcome — the line a hiring manager actually scans for. */
+.work-item__result{
+  max-width: 44ch;
   margin-bottom: var(--s-5);
+  padding-left: var(--s-4);
+  border-left: 2px solid var(--accent);
+  color: var(--text);
+  font-size: var(--fs-base);
 }
 
 /* Browser frame */
@@ -789,6 +816,39 @@ button, input, textarea{
   border-radius: 50%;
   background: var(--border-strong);
 }
+/* Desktop-app variant: a window title bar, not browser chrome. The controls
+   sit right of the title and read as minimise/maximise/close. */
+.frame--app .frame__dots{ order: 2; }
+.frame--app .frame__dots span{
+  width: 10px;
+  height: 2px;
+  border-radius: 0;
+}
+.frame--app .frame__dots span:nth-child(2){
+  height: 8px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+}
+.frame--app .frame__dots span:nth-child(3){
+  height: 10px;
+  background: transparent;
+  position: relative;
+}
+.frame--app .frame__dots span:nth-child(3)::before{
+  content: "\00d7";
+  position: absolute;
+  inset: 0;
+  line-height: 1;
+  font-size: 11px;
+  color: var(--border-strong);
+}
+.frame--app .frame__url{
+  order: 1;
+  background: transparent;
+  padding-left: 0;
+  text-align: left;
+}
+
 .frame__url{
   flex: 1;
   min-width: 0;
@@ -874,6 +934,90 @@ button, input, textarea{
   font-size: var(--fs-sm);
 }
 
+/* ========== 11b. Experience ========== */
+/* Heading left, timeline right — same shape as the contact section, so this
+   fills the container instead of trailing off two-thirds across. */
+.experience{
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: var(--s-10);
+  align-items: start;
+}
+.experience .section__head{
+  margin-bottom: 0;
+  position: sticky;
+  top: calc(var(--header-h) + var(--s-6));
+}
+
+.timeline{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Date sits in its own column so the roles line up as a scannable spine
+   rather than one flat run of left-aligned text. */
+.timeline__item{
+  position: relative;
+  display: grid;
+  grid-template-columns: 184px minmax(0, 1fr);
+  column-gap: var(--s-7);
+  padding: 0 0 var(--s-9) var(--s-7);
+  border-left: 1px solid var(--border-strong);
+}
+.timeline__item:last-child{
+  padding-bottom: 0;
+  border-left-color: transparent;
+}
+
+.timeline__item::before{
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--bg);
+}
+
+.timeline__date{
+  grid-column: 1;
+  grid-row: 1 / span 3;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  padding-top: 2px;
+}
+
+.timeline__role{
+  grid-column: 2;
+  grid-row: 1;
+  font-size: var(--fs-lg);
+  margin-bottom: var(--s-1);
+}
+
+.timeline__org{
+  grid-column: 2;
+  grid-row: 2;
+  color: var(--accent);
+  font-size: var(--fs-sm);
+  margin-bottom: var(--s-3);
+}
+
+.timeline__scope{
+  grid-column: 2;
+  grid-row: 3;
+  color: var(--text-muted);
+  font-size: var(--fs-base);
+  max-width: 56ch;
+}
+
 /* ========== 12. Services ========== */
 .services{
   display: grid;
@@ -921,7 +1065,7 @@ button, input, textarea{
   letter-spacing: var(--tracking-wide);
 }
 .service h3{ font-size: var(--fs-lg); }
-.service p{ color: var(--text-muted); font-size: var(--fs-sm); }
+.service p{ color: var(--text-muted); font-size: var(--fs-base); }
 .service .chip-row{ margin-top: auto; padding-top: var(--s-4); }
 
 /* ========== 13. Contact ========== */
@@ -1021,14 +1165,29 @@ button, input, textarea{
   color: var(--text-muted);
 }
 .form__status:empty{ display: none; }
+/* The base `a { color: inherit; text-decoration: none }` reset would render this
+   as plain body text — and it is the link the whole contact flow ends on. */
+.form__status a{
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+/* The ok/error variants already carry a semantic colour; don't fight it. */
+.form__status[data-state="ok"] a,
+.form__status[data-state="error"] a{ color: inherit; }
+/* Darker than the usual 500-weights: these sit on --surface-2, where #16a34a
+   only reached 3.0:1 and #dc2626 4.4:1. The status link inherits these, so a
+   thin colour here would take the link down with it. */
 .form__status[data-state="ok"]{
   border-color: rgba(34, 197, 94, 0.45);
-  color: #16a34a;
+  color: #166534;
 }
 :root[data-theme="dark"] .form__status[data-state="ok"]{ color: #4ade80; }
 .form__status[data-state="error"]{
   border-color: rgba(239, 68, 68, 0.45);
-  color: #dc2626;
+  color: #b91c1c;
 }
 :root[data-theme="dark"] .form__status[data-state="error"]{ color: #f87171; }
 
@@ -1048,7 +1207,8 @@ button, input, textarea{
 .footer__links{
   display: flex;
   align-items: center;
-  gap: var(--s-6);
+  flex-wrap: wrap;
+  gap: var(--s-3) var(--s-6);
   font-size: var(--fs-sm);
   color: var(--text-muted);
 }
@@ -1078,11 +1238,18 @@ button, input, textarea{
   box-shadow: var(--shadow-3);
   overflow: hidden;
 }
+/* Wraps the image so narrow screens can pan it instead of shrinking it to fit.
+   On desktop it is an inert box and the image sizes itself as before. */
+.lightbox__viewport{
+  background: var(--surface-2);
+}
 .lightbox__media{
+  display: block;
   width: 100%;
+  height: auto;
   max-height: 74vh;
   object-fit: contain;
-  background: var(--surface-2);
+  margin-inline: auto;
 }
 .lightbox__bar{
   display: flex;
@@ -1092,6 +1259,7 @@ button, input, textarea{
   padding: var(--s-4) var(--s-6);
   border-top: 1px solid var(--border);
 }
+.lightbox__label{ min-width: 0; }
 .lightbox__title{
   font-family: var(--font-display);
   font-weight: 700;
@@ -1100,6 +1268,8 @@ button, input, textarea{
   color: var(--text-muted);
   font-size: var(--fs-sm);
 }
+/* Only meaningful where the image pans — see the (hover: none) block below. */
+.lightbox__hint{ display: none; }
 .lightbox__close{
   flex: 0 0 auto;
   padding: var(--s-2) var(--s-5);
@@ -1137,16 +1307,26 @@ button, input, textarea{
   .js [data-reveal]{ opacity: 1; transform: none; }
 }
 
+@media print{
+  .js [data-reveal]{
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
 /* ========== 17. Responsive ========== */
 @media (max-width: 1000px){
   .hero__grid{
     grid-template-columns: 1fr;
     gap: var(--s-10);
   }
+  /* Source order wins here: headline and CTAs come first, portrait after.
+     The tag badge overhangs the portrait, so leave room for it. */
   .hero__portrait{
-    order: -1;
     width: min(240px, 60%);
     justify-self: center;
+    margin-bottom: var(--s-6);
   }
   .hero__title{ max-width: 18ch; }
 
@@ -1159,15 +1339,21 @@ button, input, textarea{
   .work-item__desc{ max-width: none; }
 
   .about,
-  .contact{
+  .contact,
+  .experience{
     grid-template-columns: 1fr;
     gap: var(--s-8);
+  }
+  .experience .section__head{
+    position: static;
+    margin-bottom: var(--s-2);
   }
 }
 
 @media (max-width: 760px){
   :root{ --header-h: 60px; }
 
+  .hero{ padding-block: var(--s-9) var(--s-9); }
   .section{ padding-block: var(--s-10); }
   .work-list{ gap: var(--s-10); }
 
@@ -1191,7 +1377,28 @@ button, input, textarea{
   .nav__link{ padding: var(--s-3) var(--s-4); }
   .nav__link::after{ display: none; }
   .nav__link[aria-current="true"]{ background: var(--surface-2); }
+  /* The CTA moves into the panel rather than vanishing on the device most
+     visitors arrive on. Only ever one of the two is rendered. */
   .nav__cta{ display: none; }
+  .nav__menu-cta{
+    display: inline-flex;
+    margin-top: var(--s-2);
+  }
+
+  /* No room for a date column — stack it above the role. */
+  .timeline__item{
+    grid-template-columns: minmax(0, 1fr);
+    padding-left: var(--s-6);
+    padding-bottom: var(--s-8);
+  }
+  .timeline__date{
+    grid-column: 1;
+    grid-row: 1;
+    margin-bottom: var(--s-2);
+  }
+  .timeline__role{ grid-column: 1; grid-row: 2; }
+  .timeline__org{ grid-column: 1; grid-row: 3; }
+  .timeline__scope{ grid-column: 1; grid-row: 4; }
 
   .stats{
     grid-template-columns: 1fr;
@@ -1202,11 +1409,81 @@ button, input, textarea{
   .toolbox{ gap: var(--s-6) var(--s-4); }
 
   .card{ padding: var(--s-6); }
-  .lightbox{ padding: var(--s-4); }
-  .lightbox__bar{
+}
+
+/* Keyed to the same 1000px breakpoint as .work-item, deliberately: below it the
+   work grid is one column, so the inline thumbnail is already container-width
+   and a centred dialog capped at that same width cannot magnify anything — at a
+   1.86 aspect ratio the width binds long before max-height ever applies. Go
+   full-bleed and let the image overflow horizontally so it renders near its
+   native width and pans. */
+@media (max-width: 1000px){
+  .lightbox{
+    padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+  .lightbox__dialog{
+    width: 100%;
+    height: 100vh;
+    height: 100dvh; /* browser chrome must not clip the bar */
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: var(--s-3);
+    border: 0;
+    border-radius: 0;
+  }
+  .lightbox__viewport{
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    overflow: auto;
+    /* Panning to an edge must not scroll the locked page underneath. */
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Explicit, to beat the `img { max-width: 100%; height: auto }` base reset. */
+  .lightbox__media{
+    width: auto;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin-inline: 0;
+  }
+  .lightbox__bar{
+    flex: 0 0 auto;
+    gap: var(--s-4);
+    padding: var(--s-3) var(--s-4);
+  }
+  .lightbox__title,
+  .lightbox__meta{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* Touch devices never fire :hover, so anything hover-gated is invisible there. */
+@media (hover: none){
+  /* Without this the only cue that a screenshot opens is never shown, and the
+     lightbox goes undiscovered. A corner pill reads as a control without
+     covering the screenshot the way the full-width gradient would. */
+  .frame__cue{
+    opacity: 1;
+    inset: auto var(--s-3) var(--s-3) auto;
+    gap: var(--s-1);
+    padding: var(--s-2) var(--s-3);
+    border-radius: var(--radius-full);
+    background: rgba(3, 4, 8, 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    font-size: var(--fs-xs);
+  }
+
+  .lightbox__hint{
+    display: block;
+    color: var(--text-subtle);
+    font-size: var(--fs-xs);
   }
 }
 

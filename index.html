@@ -11,6 +11,9 @@
     (function () {
       var root = document.documentElement;
       root.classList.add("js");
+      window.setTimeout(function () {
+        if (!root.classList.contains("app-ready")) root.classList.remove("js");
+      }, 3000);
       var stored = null;
       try { stored = localStorage.getItem("theme"); } catch (e) {}
       var theme = (stored === "light" || stored === "dark")
@@ -70,8 +73,11 @@
       <nav class="nav__menu" id="navMenu" aria-label="Main">
         <a class="nav__link" href="#work">Work</a>
         <a class="nav__link" href="#about">About</a>
+        <a class="nav__link" href="#experience">Experience</a>
         <a class="nav__link" href="#services">Services</a>
         <a class="nav__link" href="#contact">Contact</a>
+        <!-- Mobile-only twin of .nav__cta, which has no room beside the burger. -->
+        <a class="btn btn--sm nav__menu-cta" href="#contact">Hire me</a>
       </nav>
 
       <div class="nav__actions">
@@ -104,7 +110,7 @@
           <div class="hero__content">
             <p class="badge" data-reveal>
               <span class="badge__dot" aria-hidden="true"></span>
-              Open to opportunities
+              Open to roles and freelance projects
             </p>
 
             <h1 class="hero__title" data-reveal>
@@ -112,8 +118,8 @@
             </h1>
 
             <p class="hero__subtitle" data-reveal>
-              I&rsquo;m Ron — a software engineer focused on fast workflows, reliable data,
-              and modern UI that feels simple to use.
+              I&rsquo;m Ron, a software engineer who builds dependable business systems with
+              faster workflows, reliable data, and simple interfaces.
             </p>
 
             <div class="hero__cta" data-reveal>
@@ -142,11 +148,11 @@
           </div>
           <div class="stat">
             <dt class="stat__k">Focus</dt>
-            <dd class="stat__v">Systems • Automation • UI</dd>
+            <dd class="stat__v">Payroll · Timekeeping · Business Systems</dd>
           </div>
           <div class="stat">
             <dt class="stat__k">Stack</dt>
-            <dd class="stat__v">Web • SQL • APIs</dd>
+            <dd class="stat__v">VB.NET · SQL Server · Laravel</dd>
           </div>
         </dl>
       </div>
@@ -158,7 +164,7 @@
         <div class="section__head" data-reveal>
           <p class="eyebrow">Selected work</p>
           <h2>Systems I built and improved</h2>
-          <p class="lead">Real business software in daily use. Open any screenshot for a closer look.</p>
+          <p class="lead">Production systems used in daily operations, alongside selected personal projects.</p>
         </div>
 
         <div class="work-list">
@@ -166,28 +172,35 @@
           <article class="work-item" data-reveal>
             <div class="work-item__body">
               <span class="work-item__index">01</span>
+              <span class="work-item__system">Desktop app · Manpower services company</span>
               <h3 class="work-item__title">Payroll &amp; HR System</h3>
               <p class="work-item__desc">
-                Payroll processing and employee records, along with the reports and exports
-                finance needs at the end of every cycle.
+                End-to-end payroll and HR covering employee records, calculations, government
+                contributions, payslips, billing validation and finance reports.
+              </p>
+              <p class="work-item__result">
+                Reduced manual payroll and reporting work by about 90% while supporting
+                large-scale, multi-client payroll operations.
               </p>
               <div class="chip-row">
-                <span class="chip">Business System</span>
-                <span class="chip">Reporting</span>
-                <span class="chip">Exports</span>
+                <span class="chip">VB.NET</span>
+                <span class="chip">WinForms</span>
+                <span class="chip">.NET 4.8</span>
+                <span class="chip">SQL Server</span>
+                <span class="chip">RDLC</span>
               </div>
             </div>
 
             <div class="work-item__media">
-              <button class="frame" type="button"
+              <button class="frame frame--app" type="button"
                       data-lightbox
                       data-title="Payroll &amp; HR System"
-                      data-tags="Business System • Reporting • Exports"
+                      data-tags="VB.NET • WinForms • SQL Server • RDLC"
                       data-image="assets/img/projects/payroll-1600.webp"
                       aria-label="Open full screenshot of the Payroll and HR System">
                 <span class="frame__bar" aria-hidden="true">
                   <span class="frame__dots"><span></span><span></span><span></span></span>
-                  <span class="frame__url">payroll-hr</span>
+                  <span class="frame__url">Payroll Management System</span>
                 </span>
                 <span class="frame__shot">
                   <picture>
@@ -208,15 +221,22 @@
           <article class="work-item" data-reveal>
             <div class="work-item__body">
               <span class="work-item__index">02</span>
+              <span class="work-item__system">Internal HRIS module</span>
               <h3 class="work-item__title">Timekeeping System</h3>
               <p class="work-item__desc">
-                Biometric time logs with validation rules and an audit trail, so every
-                correction stays traceable.
+                Imports biometric logs, validates time records and reviews attendance before
+                payroll, with an audit trail that keeps corrections traceable.
+              </p>
+              <p class="work-item__result">
+                Sends validated attendance directly to payroll, removing the manual handoff
+                between systems.
               </p>
               <div class="chip-row">
-                <span class="chip">Biometrics</span>
-                <span class="chip">Validation</span>
-                <span class="chip">Audit Trail</span>
+                <span class="chip">Laravel 12</span>
+                <span class="chip">React 19</span>
+                <span class="chip">TypeScript</span>
+                <span class="chip">Inertia.js</span>
+                <span class="chip">Tailwind</span>
               </div>
             </div>
 
@@ -224,7 +244,7 @@
               <button class="frame" type="button"
                       data-lightbox
                       data-title="Timekeeping System"
-                      data-tags="Biometrics • Validation • Audit Trail"
+                      data-tags="Laravel 12 • React 19 • TypeScript • Inertia.js"
                       data-image="assets/img/projects/timekeeping-1600.webp"
                       aria-label="Open full screenshot of the Timekeeping System">
                 <span class="frame__bar" aria-hidden="true">
@@ -250,15 +270,21 @@
           <article class="work-item" data-reveal>
             <div class="work-item__body">
               <span class="work-item__index">03</span>
+              <span class="work-item__system">Internal HRIS module</span>
               <h3 class="work-item__title">Recruitment Dashboard</h3>
               <p class="work-item__desc">
-                Hiring pipeline across clients — open needs, applicant flow and fill
-                rates in one view, so nothing sits unassigned for long.
+                Shows open roles, applicant flow and fill rates in one dashboard.
+              </p>
+              <p class="work-item__result">
+                Helps recruiters prioritize unassigned profiles and at-risk requirements
+                before they age.
               </p>
               <div class="chip-row">
-                <span class="chip">Applicant Tracking</span>
-                <span class="chip">Client Demand</span>
-                <span class="chip">Analytics</span>
+                <span class="chip">Laravel 12</span>
+                <span class="chip">React 19</span>
+                <span class="chip">TypeScript</span>
+                <span class="chip">Inertia.js</span>
+                <span class="chip">Tailwind</span>
               </div>
             </div>
 
@@ -266,7 +292,7 @@
               <button class="frame" type="button"
                       data-lightbox
                       data-title="Recruitment Dashboard"
-                      data-tags="Applicant Tracking • Client Demand • Analytics"
+                      data-tags="Laravel 12 • React 19 • TypeScript • Inertia.js"
                       data-image="assets/img/projects/recruitment-1600.webp"
                       aria-label="Open full screenshot of the Recruitment Dashboard">
                 <span class="frame__bar" aria-hidden="true">
@@ -292,15 +318,16 @@
           <article class="work-item" data-reveal>
             <div class="work-item__body">
               <span class="work-item__index">04</span>
+              <span class="work-item__system">Personal project</span>
               <h3 class="work-item__title">Car Rental Management</h3>
               <p class="work-item__desc">
-                A web app with an admin dashboard and full CRUD over vehicles, bookings
-                and customer records.
+                Admin web app for vehicles, customers, bookings, rental status, payments
+                and invoices.
               </p>
               <div class="chip-row">
-                <span class="chip">Web App</span>
-                <span class="chip">Admin Dashboard</span>
-                <span class="chip">CRUD</span>
+                <span class="chip">PHP</span>
+                <span class="chip">MySQL</span>
+                <span class="chip">JavaScript</span>
               </div>
             </div>
 
@@ -308,7 +335,7 @@
               <button class="frame" type="button"
                       data-lightbox
                       data-title="Car Rental Management"
-                      data-tags="Web App • Admin Dashboard • CRUD"
+                      data-tags="PHP • MySQL • JavaScript"
                       data-image="assets/img/projects/carrental-1600.webp"
                       aria-label="Open full screenshot of Car Rental Management">
                 <span class="frame__bar" aria-hidden="true">
@@ -334,15 +361,16 @@
           <article class="work-item" data-reveal>
             <div class="work-item__body">
               <span class="work-item__index">05</span>
+              <span class="work-item__system">Personal project</span>
               <h3 class="work-item__title">Inventory Management System</h3>
               <p class="work-item__desc">
-                Stock tracking with low-stock alerts and reporting on what moves in and
-                out, so nothing runs dry unnoticed.
+                Tracks stock, reorder points, low-stock alerts and movements
+                so teams can act before items run out.
               </p>
               <div class="chip-row">
-                <span class="chip">Stock Tracking</span>
-                <span class="chip">Low-Stock Alerts</span>
-                <span class="chip">Reporting</span>
+                <span class="chip">PHP</span>
+                <span class="chip">MySQL</span>
+                <span class="chip">JavaScript</span>
               </div>
             </div>
 
@@ -350,7 +378,7 @@
               <button class="frame" type="button"
                       data-lightbox
                       data-title="Inventory Management System"
-                      data-tags="Stock Tracking • Low-Stock Alerts • Reporting"
+                      data-tags="PHP • MySQL • JavaScript"
                       data-image="assets/img/projects/inventory-1600.webp"
                       aria-label="Open full screenshot of the Inventory Management System">
                 <span class="frame__bar" aria-hidden="true">
@@ -387,17 +415,13 @@
         <div class="about">
           <div class="about__body" data-reveal>
             <p>
-              I build business systems and internal tools that make operations faster and
-              more reliable.
+              Over the past five years, I&rsquo;ve built and supported payroll, billing,
+              timekeeping and operations software — from requirements and database design
+              to deployment, documentation and user support.
             </p>
             <p>
-              I care about clean UI/UX, predictable data handling, and maintainable code —
-              the kind of software that keeps working after the person who built it moves
-              on to the next thing.
-            </p>
-            <p>
-              Most of my work sits where operations meet engineering: payroll, timekeeping,
-              inventory, reporting. Unglamorous problems, but the ones people feel every day.
+              My focus is practical software: clear interfaces, reliable data and maintainable
+              systems that teams can depend on every day.
             </p>
           </div>
 
@@ -443,13 +467,67 @@
       </div>
     </section>
 
+    <!-- ========== Experience ========== -->
+    <section class="section" id="experience">
+      <div class="container experience">
+        <div class="section__head" data-reveal>
+          <p class="eyebrow">Experience</p>
+          <h2>Where I&rsquo;ve worked</h2>
+        </div>
+
+        <ol class="timeline" data-reveal>
+          <li class="timeline__item">
+            <span class="timeline__date">Mar 2024 &ndash; Present</span>
+            <h3 class="timeline__role">Software Developer / IT Administrator</h3>
+            <span class="timeline__org">JG Manpower Corporation &middot; Para&ntilde;aque City</span>
+            <p class="timeline__scope">
+              Lead development of payroll, billing and timekeeping systems, turning operations
+              requirements into reliable features, rules and reports.
+              Optimize SQL and stored procedures while supporting multi-branch operational systems.
+            </p>
+          </li>
+
+          <li class="timeline__item">
+            <span class="timeline__date">Apr 2021 &ndash; Feb 2024</span>
+            <h3 class="timeline__role">IT Support / Payroll Systems Coordinator</h3>
+            <span class="timeline__org">JG Manpower Corporation &middot; Para&ntilde;aque City</span>
+            <p class="timeline__scope">
+              Managed high-volume payroll, including DTR validation and payslips. Delivered
+              multi-site IT support and CCTV deployments across multiple branches.
+            </p>
+          </li>
+
+          <li class="timeline__item">
+            <span class="timeline__date">Oct 2018 &ndash; Dec 2019</span>
+            <h3 class="timeline__role">IT Support Specialist &amp; Digital Media Designer</h3>
+            <span class="timeline__org">WME Phils Corp &middot; Alabang, Muntinlupa City</span>
+            <p class="timeline__scope">
+              Maintained office hardware, software and networks. Trained users in Microsoft
+              Office and Google Workspace and created digital
+              campaigns that increased inquiries by 20%.
+            </p>
+          </li>
+
+          <li class="timeline__item">
+            <span class="timeline__date">Nov 2017 &ndash; May 2018</span>
+            <h3 class="timeline__role">Junior Programmer Intern</h3>
+            <span class="timeline__org">Intellitech CLC &middot; Para&ntilde;aque City</span>
+            <p class="timeline__scope">
+              Helped build and test an internal payroll system through feature development,
+              debugging and QA.
+            </p>
+          </li>
+
+        </ol>
+      </div>
+    </section>
+
     <!-- ========== Services ========== -->
     <section class="section" id="services">
       <div class="container">
         <div class="section__head" data-reveal>
           <p class="eyebrow">Services</p>
           <h2>How I can help</h2>
-          <p class="lead">What I can build or improve for you.</p>
         </div>
 
         <div class="services">
@@ -465,12 +543,7 @@
               <span class="service__index">01</span>
             </div>
             <h3>Business Systems</h3>
-            <p>Build or upgrade internal apps — HR, payroll, inventory, operations — with clean workflows.</p>
-            <div class="chip-row">
-              <span class="chip">Workflows</span>
-              <span class="chip">Data</span>
-              <span class="chip">UX</span>
-            </div>
+            <p>Build or modernize HR, payroll, inventory and operations tools around your team&rsquo;s workflow.</p>
           </article>
 
           <article class="card service" data-reveal>
@@ -483,12 +556,7 @@
               <span class="service__index">02</span>
             </div>
             <h3>Automation &amp; Reporting</h3>
-            <p>Generate exports, reports and audit trails, and cut down on repetitive manual steps.</p>
-            <div class="chip-row">
-              <span class="chip">Exports</span>
-              <span class="chip">Reports</span>
-              <span class="chip">Audit</span>
-            </div>
+            <p>Automate repetitive workflows and create reliable reports, exports and audit trails.</p>
           </article>
 
           <article class="card service" data-reveal>
@@ -502,12 +570,7 @@
               <span class="service__index">03</span>
             </div>
             <h3>Web Apps &amp; Dashboards</h3>
-            <p>Build admin dashboards, CRUD modules and responsive UI that feels modern and fast.</p>
-            <div class="chip-row">
-              <span class="chip">CRUD</span>
-              <span class="chip">Dashboard</span>
-              <span class="chip">UI</span>
-            </div>
+            <p>Create responsive dashboards and web apps with clear, fast interfaces.</p>
           </article>
 
           <article class="card service" data-reveal>
@@ -521,13 +584,8 @@
               </span>
               <span class="service__index">04</span>
             </div>
-            <h3>Systems / IT Support</h3>
-            <p>Handle networking, device setup, deployments, and keep systems stable for day-to-day ops.</p>
-            <div class="chip-row">
-              <span class="chip">Infra</span>
-              <span class="chip">Devices</span>
-              <span class="chip">Support</span>
-            </div>
+            <h3>IT Systems &amp; Support</h3>
+            <p>Support devices, networks, deployments and day-to-day systems.</p>
           </article>
         </div>
       </div>
@@ -551,7 +609,7 @@
               </svg>
               sollezarondel@gmail.com
             </a>
-            <p class="subtle">Philippines &middot; Open to opportunities</p>
+            <p class="subtle">Philippines &middot; Open to roles and freelance projects</p>
           </div>
         </div>
 
@@ -571,7 +629,7 @@
 
             <div class="field">
               <label class="field__label" for="cf-message">Message</label>
-              <textarea class="input textarea" id="cf-message" name="message" rows="5" placeholder="What do you want to build?" required aria-describedby="cf-message-error"></textarea>
+              <textarea class="input textarea" id="cf-message" name="message" rows="5" placeholder="What would you like to build or improve?" required aria-describedby="cf-message-error"></textarea>
               <span class="field__error" id="cf-message-error"></span>
             </div>
 
@@ -581,7 +639,7 @@
               <input id="cf-botcheck" name="botcheck" type="text" tabindex="-1" autocomplete="off" />
             </div>
 
-            <button class="btn btn--block" id="contactSubmit" type="submit">Send message</button>
+            <button class="btn btn--block" id="contactSubmit" type="submit">Continue via email</button>
             <p class="form__status" id="formStatus" role="status" aria-live="polite"></p>
           </form>
         </div>
@@ -596,6 +654,7 @@
       <nav class="footer__links" aria-label="Footer">
         <a href="#work">Work</a>
         <a href="#about">About</a>
+        <a href="#experience">Experience</a>
         <a href="#services">Services</a>
         <a href="#contact">Contact</a>
         <a href="#top" id="backToTop">Back to top &uarr;</a>
@@ -603,6 +662,6 @@
     </div>
   </footer>
 
-  <script src="assets/js/app.js" defer></script>
+  <script src="assets/js/app.js" defer onerror="document.documentElement.classList.remove('js')"></script>
 </body>
 </html>

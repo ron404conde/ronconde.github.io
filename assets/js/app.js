@@ -4,13 +4,30 @@
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   Paste your Web3Forms access key here to receive messages in your inbox.
-   Get one free (no signup) at https://web3forms.com — it is emailed to you.
-   While this is empty the form falls back to opening the visitor's mail app.
+   REQUIRED: paste your Web3Forms access key here to receive messages in your
+   inbox. Get one free (no signup) at https://web3forms.com — it is emailed to
+   you. While this is empty nothing is delivered to an inbox: the form degrades
+   to offering the visitor a pre-filled mailto: link they have to click and
+   send themselves, which many visitors will not do.
    -------------------------------------------------------------------------- */
 var WEB3FORMS_KEY = "";
 
 var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Both the mobile nav and the lightbox freeze the page behind them. A plain
+   overflow write lets whichever closes last clear the other one's lock, so
+   they share a counter instead. */
+var scrollLock = (function () {
+  var count = 0;
+  return {
+    lock: function () {
+      if (++count === 1) document.body.classList.add("is-locked");
+    },
+    unlock: function () {
+      if (count > 0 && --count === 0) document.body.classList.remove("is-locked");
+    }
+  };
+})();
 
 /* ========== Theme ========== */
 (function () {
@@ -60,10 +77,15 @@ var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
   var menu = document.getElementById("navMenu");
   if (!toggle || !menu) return;
 
+  // Callers close the menu defensively from several handlers, so this has to
+  // be a no-op when the state already matches — otherwise the shared scroll
+  // lock gets released more times than it was taken.
   function setOpen(open) {
+    if (menu.classList.contains("is-open") === open) return;
     menu.classList.toggle("is-open", open);
     toggle.setAttribute("aria-expanded", String(open));
-    document.body.style.overflow = open ? "hidden" : "";
+    if (open) scrollLock.lock();
+    else scrollLock.unlock();
   }
 
   toggle.addEventListener("click", function () {
@@ -184,9 +206,9 @@ var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
   });
 
   // Failsafe: never leave the page permanently invisible if the observer
-  // never gets a chance to run.
+  // never gets a chance to run, including in full-page capture tools.
   setTimeout(function () {
-    if (!document.querySelector("[data-reveal].is-revealed")) revealAll();
+    revealAll();
   }, 2500);
 })();
 
@@ -198,23 +220,45 @@ var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
   var lb = document.createElement("div");
   lb.className = "lightbox";
   lb.innerHTML =
-    '<div class="lightbox__dialog" role="dialog" aria-modal="true" aria-labelledby="lightboxTitle">' +
-    '<img class="lightbox__media" alt="" />' +
+    '<div class="lightbox__dialog" role="dialog" aria-modal="true" aria-labelledby="lightboxTitle" tabindex="-1">' +
+    '<div class="lightbox__viewport">' +
+    '<img class="lightbox__media" width="1600" height="860" alt="" />' +
+    "</div>" +
     '<div class="lightbox__bar">' +
-    "<div>" +
+    '<div class="lightbox__label">' +
     '<div class="lightbox__title" id="lightboxTitle"></div>' +
     '<div class="lightbox__meta"></div>' +
+    '<div class="lightbox__hint">Drag to explore &#8596;</div>' +
     "</div>" +
     '<button class="lightbox__close" type="button">Close</button>' +
     "</div>" +
     "</div>";
   document.body.appendChild(lb);
 
+  var dialog = lb.querySelector(".lightbox__dialog");
+  var viewport = lb.querySelector(".lightbox__viewport");
   var media = lb.querySelector(".lightbox__media");
   var title = lb.querySelector(".lightbox__title");
   var meta = lb.querySelector(".lightbox__meta");
   var close = lb.querySelector(".lightbox__close");
   var lastFocused = null;
+
+  var FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+  function focusable() {
+    return Array.prototype.slice.call(dialog.querySelectorAll(FOCUSABLE));
+  }
+
+  // On narrow screens the image is taller than the viewport is wide, so it pans
+  // instead of shrinking to fit. Start centred: cut edges on both sides read as
+  // "this scrolls", where a flush left edge just looks like a crop.
+  function centerViewport() {
+    viewport.scrollLeft = (viewport.scrollWidth - viewport.clientWidth) / 2;
+    viewport.scrollTop = 0;
+  }
+
+  // scrollWidth is only meaningful once the image has decoded.
+  media.addEventListener("load", centerViewport);
 
   function open(trigger) {
     lastFocused = trigger;
@@ -224,13 +268,15 @@ var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
     title.textContent = name;
     meta.textContent = trigger.dataset.tags || "";
     lb.classList.add("is-open");
-    document.body.style.overflow = "hidden";
-    close.focus();
+    scrollLock.lock();
+    centerViewport();
+    // Focus the dialog rather than Close, so the title is announced first.
+    dialog.focus();
   }
 
   function hide() {
     lb.classList.remove("is-open");
-    document.body.style.overflow = "";
+    scrollLock.unlock();
     media.src = "";
     if (lastFocused) lastFocused.focus();
     lastFocused = null;
@@ -254,10 +300,27 @@ var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
       hide();
       return;
     }
-    // Close is the only focusable control in the dialog, so keep focus on it.
-    if (e.key === "Tab") {
+    if (e.key !== "Tab") return;
+
+    // Cycle focus within the dialog. Queried per keypress so the trap stays
+    // correct if more controls are added later.
+    var items = focusable();
+    if (!items.length) {
       e.preventDefault();
-      close.focus();
+      dialog.focus();
+      return;
+    }
+
+    var first = items[0];
+    var last = items[items.length - 1];
+    var active = document.activeElement;
+
+    if (e.shiftKey && (active === first || active === dialog)) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && (active === last || active === dialog)) {
+      e.preventDefault();
+      first.focus();
     }
   });
 })();
@@ -269,7 +332,13 @@ var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
 
   var submit = document.getElementById("contactSubmit");
   var status = document.getElementById("formStatus");
+  var defaultSubmitLabel = WEB3FORMS_KEY ? "Send message" : "Continue via email";
   var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  var EMAIL_ADDRESS = "sollezarondel@gmail.com";
+  // Past this, mail clients start silently truncating the prefilled body.
+  var MAILTO_MAX = 1800;
+
+  submit.textContent = defaultSubmitLabel;
 
   var rules = {
     name: function (v) {
@@ -320,10 +389,26 @@ var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
     });
   });
 
-  function setStatus(message, state) {
+  // `link` turns the status line into an actionable fallback: {href, text}.
+  function setStatus(message, state, link) {
     status.textContent = message;
+    if (link) {
+      status.appendChild(document.createTextNode(" "));
+      var a = document.createElement("a");
+      a.href = link.href;
+      a.textContent = link.text;
+      status.appendChild(a);
+    }
     if (state) status.setAttribute("data-state", state);
     else status.removeAttribute("data-state");
+  }
+
+  function mailtoUrl(data) {
+    var subject = encodeURIComponent("Portfolio message from " + data.name);
+    var body = encodeURIComponent(
+      "Name: " + data.name + "\nEmail: " + data.email + "\n\nMessage:\n" + data.message + "\n"
+    );
+    return "mailto:" + EMAIL_ADDRESS + "?subject=" + subject + "&body=" + body;
   }
 
   function values() {
@@ -334,14 +419,25 @@ var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
     };
   }
 
+  // No form backend configured. Navigating to a mailto: silently does nothing
+  // on machines with no mail client registered, so hand over a visible link
+  // the visitor chooses to click instead.
   function sendViaMailto(data) {
-    var subject = encodeURIComponent("Portfolio message from " + data.name);
-    var body = encodeURIComponent(
-      "Name: " + data.name + "\nEmail: " + data.email + "\n\nMessage:\n" + data.message + "\n"
-    );
-    window.location.href =
-      "mailto:sollezarondel@gmail.com?subject=" + subject + "&body=" + body;
-    setStatus("Opening your email app with the message pre-filled.", null);
+    var url = mailtoUrl(data);
+
+    if (url.length > MAILTO_MAX) {
+      setStatus(
+        "That message is too long to hand to a mail app. Please send it directly to",
+        "error",
+        { href: "mailto:" + EMAIL_ADDRESS, text: EMAIL_ADDRESS }
+      );
+      return;
+    }
+
+    setStatus("Almost there — finish sending from your email app:", null, {
+      href: url,
+      text: "Open a pre-filled email"
+    });
   }
 
   function sendViaWeb3Forms(data) {
@@ -349,8 +445,15 @@ var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
     submit.textContent = "Sending…";
     setStatus("Sending your message…", null);
 
+    // Without this a hung request leaves the button stuck on "Sending…".
+    var controller = new AbortController();
+    var timer = setTimeout(function () {
+      controller.abort();
+    }, 15000);
+
     return fetch("https://api.web3forms.com/submit", {
       method: "POST",
+      signal: controller.signal,
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify({
         access_key: WEB3FORMS_KEY,
@@ -371,14 +474,17 @@ var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
         setStatus("Thanks — your message is on its way. I'll get back to you soon.", "ok");
       })
       .catch(function () {
-        setStatus(
-          "Something went wrong sending that. Email me directly at sollezarondel@gmail.com.",
-          "error"
-        );
+        // The form is deliberately not reset — the typed message survives so
+        // it can be copied into a direct email.
+        setStatus("Something went wrong sending that. Email me directly at", "error", {
+          href: "mailto:" + EMAIL_ADDRESS,
+          text: EMAIL_ADDRESS
+        });
       })
       .finally(function () {
+        clearTimeout(timer);
         submit.disabled = false;
-        submit.textContent = "Send message";
+        submit.textContent = defaultSubmitLabel;
       });
   }
 
@@ -404,3 +510,5 @@ var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
   var year = document.getElementById("year");
   if (year) year.textContent = String(new Date().getFullYear());
 })();
+
+document.documentElement.classList.add("app-ready");
