@@ -934,6 +934,83 @@ button, input, textarea{
   font-size: var(--fs-sm);
 }
 
+/* ========== 11a. Tech stack ========== */
+.stack{
+  display: grid;
+  gap: var(--s-8);
+}
+.stack__label{
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  margin-bottom: var(--s-3);
+}
+.stack__grid{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: var(--s-3);
+}
+.stack__item{
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  transition: background var(--dur-base) var(--ease),
+              border-color var(--dur-base) var(--ease),
+              color var(--dur-base) var(--ease);
+}
+/* Tiles aren't links, so no lift — just a quiet highlight, and only on devices
+   with real hover so a tap doesn't leave it stuck on. */
+@media (hover: hover){
+  .stack__item:hover{
+    background: var(--surface-hover);
+    border-color: var(--border-strong);
+    color: var(--text);
+  }
+}
+.stack__item span{
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stack__item img,
+.stack__item svg{
+  width: 28px;
+  height: 28px;
+  flex: none;
+}
+/* Filled-square/circle marks read heavier than line marks at the same box size. */
+.stack__item img.stack__logo--solid{
+  width: 24px;
+  height: 24px;
+  margin: 2px; /* keep the 28px footprint so tile heights match */
+}
+/* Drawn fallbacks for tools with no official mark — kept quiet so they don't
+   read as brand logos. */
+.stack__item svg{ color: var(--text-subtle); }
+/* Dark-blue/maroon marks (MySQL, MariaDB, SQL Server) vanish on the dark
+   surface, and single-colour black marks (OpenAI, shadcn) flip to white.
+   Mirrors the theme tokens: explicit dark, or OS dark when no theme is set
+   (no-JS). */
+:root[data-theme="dark"] .stack__logo--dim{ filter: brightness(1.9) saturate(1.2); }
+:root[data-theme="dark"] .stack__logo--mono{ filter: invert(1); }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .stack__logo--dim{ filter: brightness(1.9) saturate(1.2); }
+  :root:not([data-theme="light"]) .stack__logo--mono{ filter: invert(1); }
+}
+
 /* ========== 11b. Experience ========== */
 /* Heading left, timeline right — same shape as the contact section, so this
    fills the container instead of trailing off two-thirds across. */
@@ -1317,6 +1394,12 @@ button, input, textarea{
 
 /* ========== 17. Responsive ========== */
 @media (max-width: 1000px){
+  /* Six links plus the actions only just fit before the burger takes over at
+     760px; tighten the pills so the brand and CTA never wrap. */
+  .nav__link{ padding-inline: var(--s-2); }
+  .brand,
+  .nav__cta{ white-space: nowrap; }
+
   .hero__grid{
     grid-template-columns: 1fr;
     gap: var(--s-10);
@@ -1489,6 +1572,8 @@ button, input, textarea{
 
 @media (max-width: 480px){
   .container{ width: calc(100% - var(--s-6)); }
+  .stack__grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stack__item{ padding: var(--s-3); }
   .hero__cta{ gap: var(--s-3); }
   .hero__cta .btn{ flex: 1 1 auto; }
 }
