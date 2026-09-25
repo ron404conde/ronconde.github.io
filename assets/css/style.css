@@ -960,7 +960,7 @@ button, input, textarea{
   display: flex;
   align-items: center;
   gap: var(--s-3);
-  padding: var(--s-3) var(--s-4);
+  padding: var(--s-3);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -1573,7 +1573,21 @@ button, input, textarea{
 @media (max-width: 480px){
   .container{ width: calc(100% - var(--s-6)); }
   .stack__grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .stack__item{ padding: var(--s-3); }
   .hero__cta{ gap: var(--s-3); }
   .hero__cta .btn{ flex: 1 1 auto; }
+}
+
+/* Small phones (360px Android and below): two-up tiles are ~160px wide, so
+   shave the icon and spacing to keep labels like ".NET WinForms" whole. */
+@media (max-width: 400px){
+  .stack__item{
+    gap: var(--s-2);
+    padding: var(--s-3) 10px;
+  }
+  .stack__item img,
+  .stack__item svg{ width: 22px; height: 22px; }
+  .stack__item img.stack__logo--solid{ width: 20px; height: 20px; margin: 1px; }
+}
+@media (max-width: 355px){
+  .stack__grid{ grid-template-columns: minmax(0, 1fr); }
 }
